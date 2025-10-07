@@ -10,6 +10,7 @@ import ProfileSetupScreen from '../screens/ProfileSetupScreen';
 import HomeScreen from '../screens/HomeScreen';
 import DietPlanScreen from '../screens/DietPlanScreen';
 import ExercisePlanScreen from '../screens/ExercisePlanScreen';
+import CalendarScreen from '../screens/CalendarScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 
 import { COLORS } from '../constants';
@@ -38,6 +39,8 @@ const MainTabs = () => (
           iconName = focused ? 'restaurant' : 'restaurant-outline';
         } else if (route.name === 'ExercisePlan') {
           iconName = focused ? 'fitness' : 'fitness-outline';
+        } else if (route.name === 'Calendar') {
+          iconName = focused ? 'calendar' : 'calendar-outline';
         } else if (route.name === 'Settings') {
           iconName = focused ? 'settings' : 'settings-outline';
         }
@@ -75,6 +78,11 @@ const MainTabs = () => (
       name="ExercisePlan" 
       component={ExercisePlanScreen}
       options={{ tabBarLabel: 'Exercise' }}
+    />
+    <Tab.Screen 
+      name="Calendar" 
+      component={CalendarScreen}
+      options={{ tabBarLabel: 'Progress' }}
     />
     <Tab.Screen 
       name="Settings" 
