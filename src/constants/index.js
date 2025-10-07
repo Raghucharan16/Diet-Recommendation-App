@@ -48,3 +48,31 @@ export const GENDERS = [
   { label: 'Female', value: 'female' },
   { label: 'Other', value: 'other' },
 ];
+
+export const MEDICAL_CONDITIONS = [
+  { label: 'None', value: 'none' },
+  { label: 'Diabetes Type 1', value: 'diabetes_type1' },
+  { label: 'Diabetes Type 2', value: 'diabetes_type2' },
+  { label: 'High Blood Pressure (Hypertension)', value: 'hypertension' },
+  { label: 'Heart Disease', value: 'heart_disease' },
+  { label: 'High Cholesterol', value: 'high_cholesterol' },
+  { label: 'Thyroid Disorders', value: 'thyroid' },
+  { label: 'PCOS (Polycystic Ovary Syndrome)', value: 'pcos' },
+  { label: 'Celiac Disease', value: 'celiac' },
+  { label: 'Lactose Intolerance', value: 'lactose_intolerance' },
+  { label: 'Food Allergies', value: 'food_allergies' },
+  { label: 'Kidney Disease', value: 'kidney_disease' },
+  { label: 'Liver Disease', value: 'liver_disease' },
+  { label: 'Arthritis', value: 'arthritis' },
+  { label: 'Osteoporosis', value: 'osteoporosis' },
+  { label: 'Anemia', value: 'anemia' },
+];
+
+export const COLORS_EXTENDED = {
+  ...COLORS,
+  background: '#F8F9FA',
+  lightBlue: '#E3F2FD',
+  lightGreen: '#E8F5E8',
+  lightRed: '#FFEBEE',
+  lightOrange: '#FFF3E0',
+};
