@@ -6,6 +6,7 @@ const STORAGE_KEYS = {
   DIET_PLAN: 'dietPlan',
   EXERCISE_PLAN: 'exercisePlan',
   NOTIFICATIONS_ENABLED: 'notificationsEnabled',
+  PROGRESS_DATA: 'progressData',
 };
 
 // User Profile Management
@@ -108,6 +109,27 @@ export const clearAllData = async () => {
   } catch (error) {
     console.error('Error clearing all data:', error);
     return false;
+  }
+};
+
+// Progress Data Management
+export const saveProgressData = async (progressData) => {
+  try {
+    await AsyncStorage.setItem(STORAGE_KEYS.PROGRESS_DATA, JSON.stringify(progressData));
+    return true;
+  } catch (error) {
+    console.error('Error saving progress data:', error);
+    return false;
+  }
+};
+
+export const getProgressData = async () => {
+  try {
+    const progressData = await AsyncStorage.getItem(STORAGE_KEYS.PROGRESS_DATA);
+    return progressData ? JSON.parse(progressData) : {};
+  } catch (error) {
+    console.error('Error getting progress data:', error);
+    return {};
   }
 };
 

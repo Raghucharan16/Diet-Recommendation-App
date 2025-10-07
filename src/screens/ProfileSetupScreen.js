@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../context/AppContext';
 import { saveUserProfile } from '../utils/storage';
 import { requestNotificationPermissions, scheduleMealReminders, scheduleExerciseReminders } from '../services/notificationService';
-import { COLORS, SIZES, GENDERS, ACTIVITY_LEVELS, HEALTH_GOALS, DIETARY_PREFERENCES } from '../constants';
+import { COLORS, SIZES, GENDERS, ACTIVITY_LEVELS, HEALTH_GOALS, DIETARY_PREFERENCES, MEDICAL_CONDITIONS } from '../constants';
 
 const ProfileSetupScreen = ({ navigation }) => {
   const [age, setAge] = useState('');
@@ -25,6 +25,7 @@ const ProfileSetupScreen = ({ navigation }) => {
   const [dietaryPreference, setDietaryPreference] = useState('');
   const [healthGoal, setHealthGoal] = useState('');
   const [exerciseLevel, setExerciseLevel] = useState('');
+  const [medicalConditions, setMedicalConditions] = useState('none');
   const [loading, setLoading] = useState(false);
   
   const { userProfile, updateProfile } = useApp();
@@ -39,6 +40,7 @@ const ProfileSetupScreen = ({ navigation }) => {
       setDietaryPreference(userProfile.dietaryPreference || '');
       setHealthGoal(userProfile.healthGoal || '');
       setExerciseLevel(userProfile.exerciseLevel || '');
+      setMedicalConditions(userProfile.medicalConditions || 'none');
     }
   }, [userProfile]);
 
@@ -78,6 +80,11 @@ const ProfileSetupScreen = ({ navigation }) => {
       return false;
     }
     
+    if (!medicalConditions) {
+      Alert.alert('Error', 'Please select your medical condition status');
+      return false;
+    }
+    
     return true;
   };
 
@@ -94,6 +101,7 @@ const ProfileSetupScreen = ({ navigation }) => {
         dietaryPreference,
         healthGoal,
         exerciseLevel,
+        medicalConditions,
         updatedAt: new Date().toISOString(),
       };
 
@@ -226,6 +234,13 @@ const ProfileSetupScreen = ({ navigation }) => {
             selectedValue={exerciseLevel}
             onValueChange={setExerciseLevel}
             items={ACTIVITY_LEVELS}
+          />
+
+          <PickerItem
+            label="Medical Conditions"
+            selectedValue={medicalConditions}
+            onValueChange={setMedicalConditions}
+            items={MEDICAL_CONDITIONS}
           />
 
           <TouchableOpacity 

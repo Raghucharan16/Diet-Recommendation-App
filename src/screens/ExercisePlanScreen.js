@@ -13,18 +13,24 @@ import { WebView } from 'react-native-webview';
 import { useApp } from '../context/AppContext';
 import { generateExercisePlan } from '../services/huggingfaceApi';
 import { saveExercisePlan } from '../utils/storage';
+import { getExerciseRecommendations, getMedicalConditionName } from '../utils/medicalRecommendations';
 import { COLORS, SIZES } from '../constants';
 
 const ExercisePlanScreen = ({ navigation }) => {
   const { userProfile, exercisePlan, setExercisePlan } = useApp();
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [medicalRecommendations, setMedicalRecommendations] = useState(null);
 
   useEffect(() => {
     if (!exercisePlan && userProfile) {
       generatePlan();
     }
-  }, []);
+    if (userProfile && userProfile.medicalConditions) {
+      const recommendations = getExerciseRecommendations(userProfile.medicalConditions, userProfile);
+      setMedicalRecommendations(recommendations);
+    }
+  }, [userProfile]);
 
   const generatePlan = async () => {
     if (!userProfile) return;
@@ -145,6 +151,32 @@ const ExercisePlanScreen = ({ navigation }) => {
             <Text style={styles.statValue}>7 Days</Text>
             <Text style={styles.statLabel}>Duration</Text>
           </View>
+        </View>
+      )}
+
+      {medicalRecommendations && medicalRecommendations.condition !== 'none' && (
+        <View style={styles.medicalSection}>
+          <Text style={styles.medicalTitle}>
+            Exercise Guidelines for {getMedicalConditionName(medicalRecommendations.condition)}
+          </Text>
+          
+          {medicalRecommendations.exerciseModifications.length > 0 && (
+            <View style={styles.medicalCard}>
+              <Text style={styles.medicalCardTitle}>🏃‍♂️ Exercise Modifications</Text>
+              {medicalRecommendations.exerciseModifications.map((modification, index) => (
+                <Text key={index} style={styles.medicalItem}>• {modification}</Text>
+              ))}
+            </View>
+          )}
+
+          {medicalRecommendations.specialNotes.length > 0 && (
+            <View style={styles.medicalCard}>
+              <Text style={styles.medicalCardTitle}>⚠️ Important Notes</Text>
+              {medicalRecommendations.specialNotes.map((note, index) => (
+                <Text key={index} style={styles.medicalItem}>• {note}</Text>
+              ))}
+            </View>
+          )}
         </View>
       )}
 
@@ -269,6 +301,42 @@ const styles = StyleSheet.create({
     color: COLORS.gray,
     textAlign: 'center',
     marginTop: 8,
+  },
+  medicalSection: {
+    backgroundColor: '#FFF3E0',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    maxHeight: 300,
+  },
+  medicalTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: COLORS.warning,
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  medicalCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  medicalCardTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.black,
+    marginBottom: 6,
+  },
+  medicalItem: {
+    fontSize: 12,
+    color: COLORS.darkGray,
+    lineHeight: 16,
+    marginBottom: 2,
   },
 });
 

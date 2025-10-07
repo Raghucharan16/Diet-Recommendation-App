@@ -13,18 +13,24 @@ import { WebView } from 'react-native-webview';
 import { useApp } from '../context/AppContext';
 import { generateDietPlan } from '../services/huggingfaceApi';
 import { saveDietPlan } from '../utils/storage';
+import { getDietaryRecommendations, getMedicalConditionName } from '../utils/medicalRecommendations';
 import { COLORS, SIZES } from '../constants';
 
 const DietPlanScreen = ({ navigation }) => {
   const { userProfile, dietPlan, setDietPlan } = useApp();
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [medicalRecommendations, setMedicalRecommendations] = useState(null);
 
   useEffect(() => {
     if (!dietPlan && userProfile) {
       generatePlan();
     }
-  }, []);
+    if (userProfile && userProfile.medicalConditions) {
+      const recommendations = getDietaryRecommendations(userProfile.medicalConditions, userProfile);
+      setMedicalRecommendations(recommendations);
+    }
+  }, [userProfile]);
 
   const generatePlan = async () => {
     if (!userProfile) return;
@@ -160,6 +166,50 @@ const DietPlanScreen = ({ navigation }) => {
         </View>
       )}
 
+      {medicalRecommendations && medicalRecommendations.condition !== 'none' && (
+        <View style={styles.medicalSection}>
+          <Text style={styles.medicalTitle}>
+            Medical Recommendations for {getMedicalConditionName(medicalRecommendations.condition)}
+          </Text>
+          
+          {medicalRecommendations.dietaryRestrictions.length > 0 && (
+            <View style={styles.medicalCard}>
+              <Text style={styles.medicalCardTitle}>⚠️ Dietary Guidelines</Text>
+              {medicalRecommendations.dietaryRestrictions.map((restriction, index) => (
+                <Text key={index} style={styles.medicalItem}>• {restriction}</Text>
+              ))}
+            </View>
+          )}
+
+          {medicalRecommendations.recommendedFoods.length > 0 && (
+            <View style={styles.medicalCard}>
+              <Text style={styles.medicalCardTitle}>✅ Recommended Foods</Text>
+              {medicalRecommendations.recommendedFoods.map((food, index) => (
+                <Text key={index} style={styles.medicalItem}>• {food}</Text>
+              ))}
+            </View>
+          )}
+
+          {medicalRecommendations.avoidFoods.length > 0 && (
+            <View style={styles.medicalCard}>
+              <Text style={styles.medicalCardTitle}>❌ Foods to Limit/Avoid</Text>
+              {medicalRecommendations.avoidFoods.map((food, index) => (
+                <Text key={index} style={styles.medicalItem}>• {food}</Text>
+              ))}
+            </View>
+          )}
+
+          {medicalRecommendations.specialNotes.length > 0 && (
+            <View style={styles.medicalCard}>
+              <Text style={styles.medicalCardTitle}>💡 Important Notes</Text>
+              {medicalRecommendations.specialNotes.map((note, index) => (
+                <Text key={index} style={styles.medicalItem}>• {note}</Text>
+              ))}
+            </View>
+          )}
+        </View>
+      )}
+
       {dietPlan?.data ? (
         <WebView
           source={{ html: renderHTML(dietPlan.data) }}
@@ -278,6 +328,42 @@ const styles = StyleSheet.create({
     color: COLORS.gray,
     textAlign: 'center',
     marginTop: 8,
+  },
+  medicalSection: {
+    backgroundColor: '#F8F9FA',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    maxHeight: 300,
+  },
+  medicalTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: COLORS.primary,
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  medicalCard: {
+    backgroundColor: COLORS.white,
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  medicalCardTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: COLORS.black,
+    marginBottom: 6,
+  },
+  medicalItem: {
+    fontSize: 12,
+    color: COLORS.darkGray,
+    lineHeight: 16,
+    marginBottom: 2,
   },
 });
 
