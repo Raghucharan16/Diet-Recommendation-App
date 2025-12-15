@@ -11,7 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import { useApp } from '../context/AppContext';
-import { generateDietPlan } from '../services/huggingfaceApi';
+import { generateDietPlan } from '../services/aiService';
 import { saveDietPlan } from '../utils/storage';
 import { getDietaryRecommendations, getMedicalConditionName } from '../utils/medicalRecommendations';
 import { COLORS, SIZES } from '../constants';

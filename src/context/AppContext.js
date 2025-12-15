@@ -6,7 +6,7 @@ const initialState = {
   user: null,
   userProfile: null,
   isAuthenticated: false,
-  loading: true,
+  loading: false, // Changed to false - load app immediately
   dietPlan: null,
   exercisePlan: null,
   notifications: {
@@ -76,28 +76,32 @@ export const AppProvider = ({ children }) => {
 
   // Check authentication status on app start
   useEffect(() => {
+    console.log('[AppContext] Initializing...');
     checkAuthStatus();
   }, []);
 
   const checkAuthStatus = async () => {
+    console.log('[Auth] Checking authentication status...');
     try {
-      dispatch({ type: ACTION_TYPES.SET_LOADING, payload: true });
-      
       const isLoggedIn = await isUserLoggedIn();
+      console.log('[Auth] isUserLoggedIn result:', isLoggedIn);
       
       if (isLoggedIn) {
+        console.log('[Auth] User is logged in. Fetching profile...');
         const credentials = await getUserCredentials();
         const profile = await getUserProfile();
         
+        console.log('[Auth] Profile fetched:', profile ? 'Yes' : 'No');
         dispatch({ type: ACTION_TYPES.SET_USER, payload: credentials });
         dispatch({ type: ACTION_TYPES.SET_USER_PROFILE, payload: profile });
         dispatch({ type: ACTION_TYPES.SET_AUTHENTICATED, payload: true });
+      } else {
+        console.log('[Auth] User is not logged in.');
       }
     } catch (error) {
-      console.error('Error checking auth status:', error);
-    } finally {
-      dispatch({ type: ACTION_TYPES.SET_LOADING, payload: false });
+      console.error('[Auth] Error checking auth status:', error);
     }
+    console.log('[Auth] Check complete');
   };
 
   // Action creators

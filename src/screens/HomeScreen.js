@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useApp } from '../context/AppContext';
-import { generateDietPlan, generateExercisePlan } from '../services/huggingfaceApi';
+import { generateDietPlan, generateExercisePlan } from '../services/aiService';
 import { saveDietPlan, saveExercisePlan, getDietPlan, getExercisePlan } from '../utils/storage';
 import { calculateBMI, getBMICategory } from '../utils/calculations';
 import { COLORS, SIZES } from '../constants';
@@ -43,17 +43,23 @@ const HomeScreen = ({ navigation }) => {
       return;
     }
 
+    console.log('[HomeScreen] Starting recommendation generation...');
     setLoading(true);
     try {
       // Generate both diet and exercise plans simultaneously
+      console.log('[HomeScreen] Calling generateDietPlan and generateExercisePlan...');
       const [dietResult, exerciseResult] = await Promise.all([
         generateDietPlan(userProfile),
         generateExercisePlan(userProfile)
       ]);
+      console.log('[HomeScreen] API calls finished.');
+      console.log('[HomeScreen] Diet Result:', dietResult ? 'Received' : 'Not Received');
+      console.log('[HomeScreen] Exercise Result:', exerciseResult ? 'Received' : 'Not Received');
 
       if (dietResult.success) {
         setDietPlan(dietResult);
         await saveDietPlan(dietResult);
+        console.log('[HomeScreen] Diet plan saved.');
       } else {
         Alert.alert('Diet Plan Error', dietResult.error);
       }
@@ -61,6 +67,7 @@ const HomeScreen = ({ navigation }) => {
       if (exerciseResult.success) {
         setExercisePlan(exerciseResult);
         await saveExercisePlan(exerciseResult);
+        console.log('[HomeScreen] Exercise plan saved.');
       } else {
         Alert.alert('Exercise Plan Error', exerciseResult.error);
       }
@@ -74,6 +81,7 @@ const HomeScreen = ({ navigation }) => {
       console.error('Error generating recommendations:', error);
       Alert.alert('Error', 'Failed to generate recommendations. Please try again.');
     } finally {
+      console.log('[HomeScreen] Setting loading to false.');
       setLoading(false);
     }
   };
