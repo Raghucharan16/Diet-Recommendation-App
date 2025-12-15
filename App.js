@@ -21,11 +21,7 @@ const LoadingScreen = () => (
 
 // Main App Content
 const AppContent = () => {
-  const { loading, isAuthenticated, userProfile } = useApp();
-
-  if (loading) {
-    return <LoadingScreen />;
-  }
+  const { isAuthenticated, userProfile } = useApp();
 
   return (
     <NavigationContainer>
